@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <iostream>
 #include <string.h>
+#include <limits>
 
 #include "ASTBuilder.h"
 #include "AstNode.h"
