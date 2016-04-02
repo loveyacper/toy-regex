@@ -19,6 +19,7 @@ struct Input
     Input();
 
     bool IsEnd() const;
+    bool IsAny() const;
     bool Accept(int ch) const;
 
     friend bool operator==(const Input& a, const Input& b);
@@ -50,6 +51,7 @@ public:
     virtual Input GetInput() const { return Input();  }
 
     static const int kEnd;
+    static const int kAny;
 
 private:
     mutable PositionNodes  followpos_;

@@ -42,15 +42,18 @@ void DFA::State::AddTranslation(const Input& input, DFA::State* dstState)
     transition[input] = dstState;
 }
    
-DFA::State* DFA::State::NextState(int input) const
+std::set<DFA::State*> DFA::State::NextState(int input) const
 {
+    std::set<DFA::State* > res;
     for (const auto& pair : transition)
     {
         if (pair.first.Accept(input))
-            return pair.second;
+        {
+            res.insert(pair.second);
+        }
     }
 
-    return nullptr;
+    return res;
 }
 
 
@@ -61,7 +64,7 @@ bool DFA::Construct(ASTNode* root)
 
     std::vector<ASTNode::PositionNodes > stateQueue{ root->FirstPos() };
 
-    for (std::size_t src = 0; src < stateQueue.size(); ++src)
+    for (int src = 0; src < static_cast<int>(stateQueue.size()); ++src)
     {
         const auto& srcCurrentState = stateQueue[src];
 
@@ -80,17 +83,17 @@ bool DFA::Construct(ASTNode* root)
             const auto& input = pair.first;
             const auto& followers = pair.second;
             // add new sets
-            std::size_t dstIndex = 0;
+            int dstIndex = 0;
             auto it = std::find(stateQueue.begin(), stateQueue.end(), followers);
             if (it == stateQueue.end())
             {
                 stateQueue.push_back(followers);
                 it = -- stateQueue.end();
-                dstIndex = stateQueue.size() - 1;
+                dstIndex = static_cast<int>(stateQueue.size() - 1);
             }
             else
             {
-                dstIndex = std::distance(stateQueue.begin(), it);
+                dstIndex = static_cast<int>(std::distance(stateQueue.begin(), it));
             }
 
             // record transition
@@ -127,21 +130,7 @@ bool DFA::Match(const char* pattern, std::size_t len) const
     if (!current)
         return true;
 
-    std::size_t offset = 0;
-    while (offset < len)
-    {
-        auto next = current->NextState(pattern[offset]);
-        if (!next)
-            return false;
-
-        current = next;
-        ++ offset;
-    }
-
-    if (current && current->isFinal)
-        return true;
-
-    return false;
+    return _Match(current, pattern, len);
 }
 
 
@@ -155,6 +144,27 @@ bool DFA::Match(const std::string& pattern) const
     return Match(pattern.c_str(), pattern.size());
 }
 
+
+bool DFA::_Match(DFA::State* current, const char* pattern, std::size_t len)
+{
+    if (!current)
+        return true;
+
+    if (len == 0)
+        return current->isFinal;
+
+    auto nextlist = current->NextState(pattern[0]);
+
+    for (auto state : nextlist)
+    {
+        if (_Match(state, pattern + 1, len - 1))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 DFA::State* DFA::_GetState(int id) const
 {

@@ -2,6 +2,7 @@
 #define BERT_DFA_H
  
 #include <map>
+#include <set>
 #include <memory>
 #include <string>
 
@@ -29,7 +30,7 @@ public:
         std::string DebugString() const;
 
         void AddTranslation(const Input& input, State* dstState);
-        State* NextState(int input) const;
+        std::set<State*> NextState(int input) const;
 
         int id;
         bool isFinal;
@@ -37,6 +38,8 @@ public:
     };
 
 private:
+    static bool _Match(State* current, const char* pattern, std::size_t len);
+
     typedef std::map<int, std::unique_ptr<State> > States;
 
     States dfa_;

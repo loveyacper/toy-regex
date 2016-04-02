@@ -30,7 +30,8 @@ bool Regex::Compile(const char* regex, std::size_t len)
     internal::ASTBuilder  astBuilder;
     if (!astBuilder.Build(regex, len))
         return false;
-   // astBuilder.Print();
+    
+  //  astBuilder.Print();
 
     return dfa_.Construct(astBuilder.GetASTRoot());
 }

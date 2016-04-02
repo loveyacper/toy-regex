@@ -29,9 +29,22 @@ bool Input::IsEnd() const
     return chars.size() == 1 && *chars.begin() == ASTNode::kEnd;
 }
 
+bool Input::IsAny() const
+{
+    if (exclude)
+        return false;
+
+    if (!ranges.empty())
+        return false;
+
+    return chars.size() == 1 && *chars.begin() == ASTNode::kAny;
+}
 
 bool Input::Accept(int ch) const
 {
+    if (IsAny())
+        return true;
+
     bool found = false;
     if (chars.count(ch) > 0)
         found = true;
@@ -68,6 +81,7 @@ bool operator<(const Input& a, const Input& b)
 }
 
 const int ASTNode::kEnd = -1;
+const int ASTNode::kAny = -2;
 
 ASTNode::~ASTNode() 
 {
@@ -105,6 +119,8 @@ void CharNode::Print(int indent) const
     std::cerr << "CharNode ";
     if (char_ == kEnd)
         std::cerr << "[End]\n";
+    else if (char_ == kAny)
+        std::cerr << "[Any]\n";
     else
         std::cerr << (char)char_ << std::endl;
 }

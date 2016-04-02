@@ -25,6 +25,7 @@ class ASTBuilder final
     static const int kPlus= '+';
     static const int kQuestion = '?';
     static const int kSlash = '\\';
+    static const int kDot = '.';
 
 public:
     void Print() const;

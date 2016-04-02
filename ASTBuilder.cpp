@@ -190,7 +190,7 @@ bool ASTBuilder::Build(const char* regex, std::size_t len)
                 prevHasSign = true;
             }
             
-            ast_.push(std::unique_ptr<CharNode>(new CharNode(ch)));
+            ast_.push(std::unique_ptr<CharNode>(new CharNode(ch == kDot ? ASTNode::kAny : ch)));
             prevHasSign = false;
             break;
         }

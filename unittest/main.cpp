@@ -7,7 +7,7 @@
 using bert::Regex;
 
 
-// Toy regex, only support [^] () | * + ? concat
+// Toy regex, support [^] () | * . + ? concat
 
 TEST_CASE(hello)
 {
@@ -113,9 +113,18 @@ TEST_CASE(hello9)
     EXPECT_FALSE(r.Match("xde"));
 }
 
-
 TEST_CASE(hello10)
 {
+    Regex t("a.*b");
+    
+    EXPECT_TRUE(t.Match("ab"));
+    EXPECT_TRUE(t.Match("abb"));
+    EXPECT_TRUE(t.Match("abbb"));
+
+    EXPECT_FALSE(t.Match("a"));
+    EXPECT_FALSE(t.Match("b"));
+    EXPECT_FALSE(t.Match("bb"));
+    EXPECT_FALSE(t.Match(""));
 }
 
 TEST_CASE(hello11)
@@ -178,3 +187,9 @@ TEST_CASE(hello16)
     EXPECT_FALSE(t.Match("a"));
 }
 
+TEST_CASE(hello17)
+{
+    Regex t("a\\+[bc].*e?f+");
+    EXPECT_TRUE(t.Match("a+cbf"));
+    EXPECT_TRUE(t.Match("a+bceff"));
+}
